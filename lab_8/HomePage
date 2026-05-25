@@ -1,0 +1,40 @@
+package edu.IFNTUNG.github.application.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
+
+public class HomePage {
+    private WebDriver driver;
+    private WebDriverWait wait;
+
+    private By signInLink = By.linkText("Sign in");
+    private By signUpLink = By.linkText("Sign up");
+    private By searchActivationButton = By.className("search-input-container");
+    private By searchInput = By.id("query-builder-test");
+
+    public HomePage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+    public SignInPage clickSignIn() {
+        wait.until(ExpectedConditions.elementToBeClickable(signInLink)).click();
+        return new SignInPage(driver); // Повертає об'єкт наступної сторінки
+    }
+
+    public SignUpPage clickSignUp() {
+        wait.until(ExpectedConditions.elementToBeClickable(signUpLink)).click();
+        return new SignUpPage(driver);
+    }
+
+    public void searchForRepository(String text) {
+        wait.until(ExpectedConditions.elementToBeClickable(searchActivationButton)).click();
+        WebElement input = wait.until(ExpectedConditions.visibilityOfElementLocated(searchInput));
+        input.sendKeys(text);
+        input.submit();
+    }
+}
