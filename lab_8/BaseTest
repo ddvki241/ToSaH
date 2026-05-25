@@ -1,0 +1,67 @@
+package edu.IFNTUNG.Github.tests;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import edu.IFNTUNG.github.application.pages.HomePage;
+import edu.IFNTUNG.github.application.pages.SignInPage;
+import edu.IFNTUNG.github.application.pages.SignUpPage;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import java.time.Duration;
+
+public class BaseTest {
+
+    private WebDriver driver;
+    private WebDriverWait wait;
+    private static final String BASE_URL = "https://github.com";
+
+    @BeforeClass
+    public void setUpClass() {
+        WebDriverManager.chromedriver().setup();
+    }
+
+    @BeforeMethod
+    public void setUp() {
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        driver.get(BASE_URL);
+    }
+
+    @Test
+    public void testNavigationToSignUpPage() {
+        HomePage homePage = new HomePage(driver);
+        SignUpPage signUpPage = homePage.clickSignUp();
+
+        Assert.assertTrue(signUpPage.isUrlCorrect(), "URL сторінки реєстрації невірний!");
+    }
+
+    @Test
+    public void testGitHubSearch() {
+        HomePage homePage = new HomePage(driver);
+        homePage.searchForRepository("selenium");
+
+        boolean isSearchUrl = wait.until(driver -> driver.getCurrentUrl().contains("q=selenium"));
+        Assert.assertTrue(isSearchUrl, "Результати пошуку для 'selenium' не відобразилися!");
+    }
+
+    @Test
+    public void testNavigationToSignInPage() {
+        HomePage homePage = new HomePage(driver);
+        SignInPage signInPage = homePage.clickSignIn();
+
+        Assert.assertTrue(signInPage.isHeaderDisplayed(), "Форма авторизації Sign In не з'явилася!");
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
